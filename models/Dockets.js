@@ -26,4 +26,6 @@ const DocketSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Docket', DocketSchema);
+const Docket = mongoose.model('Docket', DocketSchema);
+
+export default Docket;

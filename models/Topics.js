@@ -15,4 +15,6 @@ const TopicSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Topic', TopicSchema);
+const Topic = mongoose.model('Topic', TopicSchema);
+
+export default Topic
