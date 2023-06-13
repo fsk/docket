@@ -28,7 +28,7 @@ const createTopic = async (req, res) => {
 const deleteTopic = async (req, res) => {
     try {
         const topicId = req.params.id;
-        const foundTopic = await Topic.findByIdAndDelete({_id: topicId})
+        const foundTopic = await Topic.findByIdAndDelete({ _id: topicId })
         if (foundTopic === null) {
             return res.status(404).json({message: `Error while delete`})
         }

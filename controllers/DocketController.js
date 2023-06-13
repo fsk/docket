@@ -1,4 +1,5 @@
 import Docket from '../models/Dockets.js';
+import Topic from "../models/Topics.js";
 
 const docketList = async (req, res) => {
     try {
@@ -20,7 +21,21 @@ const createDocket = async (req, res) => {
     }
 }
 
+const deleteDocket = async (req, res) => {
+    try {
+        const docketId = req.params.id;
+        const foundDocket = await Docket.findByIdAndDelete({ _id: docketId })
+        if (foundDocket === null) {
+            return res.status(404).json({message: `Error while delete`})
+        }
+        return res.status(204).json({message: `Deleted`});
+    }catch (err) {
+        return res.json({error: `${err}`});
+    }
+}
+
 export default {
     docketList,
-    createDocket
+    createDocket,
+    deleteDocket
 }
