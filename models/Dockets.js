@@ -5,13 +5,10 @@ const DocketSchema = new Schema({
     docketTitle: {
         type: String,
         required: true,
-        unique: true,
         minLength: 3
     },
     docketContent: {
         type: String,
-        required: true,
-        unique: true,
         minLength: 3,
         maxLength: 300
     },
