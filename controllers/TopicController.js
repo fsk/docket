@@ -39,8 +39,29 @@ const deleteTopic = async (req, res) => {
     }
 }
 
+
+const updateTopicById = async (req, res) => {
+    try {
+        const result = await Topic.findByIdAndUpdate(
+            { _id: req.params.id },
+            req.body,
+            { new: true }
+        );
+        if (result) {
+            return res.json(result);
+        } else {
+            return res.status(404).json({
+                message: "Topic didn't find.",
+            });
+        }
+    }catch (err) {
+        return res.json({error: `${err}`});
+    }
+}
+
 export default {
     topicList,
     createTopic,
-    deleteTopic
+    deleteTopic,
+    updateTopicById
 }

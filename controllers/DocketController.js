@@ -34,8 +34,29 @@ const deleteDocket = async (req, res) => {
     }
 }
 
+const updateDocket = async (req, res) => {
+    try {
+        const result = await Docket.findByIdAndUpdate(
+            { _id: req.params.id },
+            req.body,
+            { new: true }
+        );
+        if (result) {
+            return res.json(result);
+        } else {
+            return res.status(404).json({
+                message: "Docket didn't find.",
+            });
+        }
+    }catch (err) {
+        return res.json({error: `${err}`});
+    }
+}
+
+
 export default {
     docketList,
     createDocket,
-    deleteDocket
+    deleteDocket,
+    updateDocket
 }
