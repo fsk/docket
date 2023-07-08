@@ -1,40 +1,41 @@
 import Docket from '../models/Dockets.js';
 import Topic from "../models/Topics.js";
+import createError from "http-errors";
 
-const docketList = async (req, res) => {
+const docketList = async (req, res, next) => {
     try {
         const topicId = req.params.id;
         const allDocketsFromTopic = await Docket.find( { topic: topicId });
         return res.status(200).json(allDocketsFromTopic);
     }catch (err) {
-        return res.json({error: `${err}`});
+        next(createError(500, err));
     }
 }
 
-const createDocket = async (req, res) => {
+const createDocket = async (req, res, next) => {
     try {
         const newDocket = req.body;
         const createdDocket = await Docket.create(newDocket);
         return res.status(201).json(createdDocket);
     }catch (err) {
-        return res.json({error: `${err}`});
+        next(createError(500, err));
     }
 }
 
-const deleteDocket = async (req, res) => {
+const deleteDocket = async (req, res, next) => {
     try {
         const docketId = req.params.id;
         const foundDocket = await Docket.findByIdAndDelete({ _id: docketId })
         if (foundDocket === null) {
-            return res.status(404).json({message: `Error while delete`})
+            throw createError(400, 'Error when delete docket');
         }
         return res.status(204).json({message: `Deleted`});
     }catch (err) {
-        return res.json({error: `${err}`});
+        next(createError(500, err));
     }
 }
 
-const updateDocket = async (req, res) => {
+const updateDocket = async (req, res, next) => {
     try {
         const result = await Docket.findByIdAndUpdate(
             { _id: req.params.id },
@@ -44,12 +45,10 @@ const updateDocket = async (req, res) => {
         if (result) {
             return res.json(result);
         } else {
-            return res.status(404).json({
-                message: "Docket didn't find.",
-            });
+            throw createError(400, 'Docket didnt find');
         }
     }catch (err) {
-        return res.json({error: `${err}`});
+        next(createError(500, err));
     }
 }
 

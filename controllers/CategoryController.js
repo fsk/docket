@@ -1,52 +1,57 @@
 import Category from '../models/Categories.js';
 import Topic from "../models/Topics.js";
-
-const categoryList = async (req, res) => {
+import createError from "http-errors";
+const categoryList = async (req, res, next) => {
     try {
         const allCategories = await Category.find({});
         return res.json(allCategories);
     }catch(error) {
-        return res.json({error: `${error}`});
+        next(createError(500, error));
     }
 }
 
-const categoryById = async (req, res) => {
+const categoryById = async (req, res, next) => {
     const categoryId = req.params.id;
     try {
         const categoryById = await Topic
-            .find({category: categoryId}, {topicName: 1})
+            .find({category: categoryId}, {topicName: 1});
         return res.status(200).json(categoryById);
     }catch (error) {
-        return res.json({error: `${error}`});
+        //return res.json({error: `${error}`});
+        console.log({error: `${error}`})
+        next(createError(400, error));
     }
 }
 
-const createCategory = async (req, res) => {
+const createCategory = async (req, res, next) => {
     try {
         const category = req.body;
         const createCategory = await Category.create(category);
         return res.status(201).json(createCategory);
     }catch (error) {
-        return res.json({error: `${error}`});
+        console.log({error: `${error}`})
+        next(createError(404, error))
     }
 }
 
-const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res, next) => {
     try {
         const categoryId = req.params.id;
         const foundCategory = await Category.findByIdAndDelete({_id: categoryId})
-        if (foundCategory === null) {
-            return res.status(404).json({message: `Error while delete`})
+        if (foundCategory !== null) {
+            return res.status(204).json({message: `Deleted`});
+        }else {
+            throw createError(404, 'Category didnt find.');
         }
-        return res.status(204).json({message: `Deleted`});
 
     }catch (error) {
-        return res.json({error: `${error}`});
+        console.log({error: `${error}`})
+        next(createError(404, error))
     }
 }
 
 
-const updateCategoryById = async (req, res) => {
+const updateCategoryById = async (req, res, next) => {
     try {
         const result = await Category.findByIdAndUpdate(
             { _id: req.params.id },
@@ -56,12 +61,11 @@ const updateCategoryById = async (req, res) => {
         if (result) {
             return res.json(result);
         } else {
-            return res.status(404).json({
-                message: "Category didn't find.",
-            });
+            throw createError(404, 'Category didnt find.');
         }
     }catch (err) {
-        return res.json({error: `${err}`});
+        console.log({error: `${err}`})
+        next(createError(404, err))
     }
 }
 

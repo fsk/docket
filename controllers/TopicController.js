@@ -1,6 +1,7 @@
 import Topic from '../models/Topics.js'
+import createError from "http-errors";
 
-const topicList = async (req, res) => {
+const topicList = async (req, res, next) => {
     try {
         const categoryId = req.params.id;
         const allTopicsFromCategory = await Topic.find({ category : categoryId });
@@ -10,7 +11,7 @@ const topicList = async (req, res) => {
     }
 }
 
-const createTopic = async (req, res) => {
+const createTopic = async (req, res, next) => {
     try {
         const category = req.body.category.categoryId;
         const topicName = req.body.topicName;
@@ -21,26 +22,26 @@ const createTopic = async (req, res) => {
         const createTopic = await Topic.create(topic);
         return res.status(201).json(createTopic);
     }catch (err) {
-        return res.json({error: `${err}`});
+        next(createError(404, err))
     }
 }
 
-const deleteTopic = async (req, res) => {
+const deleteTopic = async (req, res, next) => {
     try {
         const topicId = req.params.id;
         const foundTopic = await Topic.findByIdAndDelete({ _id: topicId })
         if (foundTopic === null) {
-            return res.status(404).json({message: `Error while delete`})
+            throw createError(400, 'Error while delete topic');
         }
         return res.status(204).json({message: `Deleted`});
 
     }catch (error) {
-        return res.json({error: `${error}`});
+        next(createError(404, error))
     }
 }
 
 
-const updateTopicById = async (req, res) => {
+const updateTopicById = async (req, res, next) => {
     try {
         const result = await Topic.findByIdAndUpdate(
             { _id: req.params.id },
@@ -50,12 +51,10 @@ const updateTopicById = async (req, res) => {
         if (result) {
             return res.json(result);
         } else {
-            return res.status(404).json({
-                message: "Topic didn't find.",
-            });
+            throw createError(400, 'Topic didnt find');
         }
     }catch (err) {
-        return res.json({error: `${err}`});
+        next(createError(404, err))
     }
 }
 
